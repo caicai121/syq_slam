@@ -16,6 +16,15 @@
 - **Gmapping（激光 SLAM）**：2D 激光雷达建图
 - **ORB-SLAM2（视觉 SLAM）**：RGB-D 稀疏特征点建图
 
+## 项目亮点
+
+- 基于 Gazebo 搭建 AGV 仿真环境；
+- 完成机器人模型、激光雷达、RGB-D 相机等传感器配置；
+- 实现 Gmapping 激光 SLAM 建图流程；
+- 接入 ORB-SLAM2 RGB-D 视觉 SLAM 流程；
+- 编写调试脚本，对 odom、scan、map、Gazebo 真值等数据进行辅助分析；
+- 将早期测试包与主 SLAM 工程统一整理为可版本管理的 ROS 工作空间。
+
 ## 环境要求
 
 本项目测试环境：
