@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<robot name="move" xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- 为机器人添加 Gazebo 差速驱动插件 -->
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+      <publishOdomTF>true</publishOdomTF>
+      <publishWheelTF>false</publishWheelTF>
+      <publishTf>true</publishTf>
+      <odometrySource>world</odometrySource>
+      <!-- 必须与 base.xacro 中参数一致 -->
+      <wheelSeparation>0.2</wheelSeparation>
+      <wheelDiameter>0.065</wheelDiameter> <!-- 0.0325 * 2 -->
+      <torque>10</torque>
+      <updateRate>30.0</updateRate>
+      <!-- 必须与 base.xacro 中关节名完全一致 -->
+      <leftJoint>left_wheel2base_link</leftJoint>
+      <rightJoint>right_wheel2base_link</rightJoint>
+    </plugin>
+  </gazebo>
+</robot>

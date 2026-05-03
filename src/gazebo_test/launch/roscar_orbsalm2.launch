@@ -1,0 +1,26 @@
+<launch>
+    <!-- 将 Xacro 文件的内容加载到参数服务器 -->
+    <param name="robot_description" command="$(find xacro)/xacro $(find gazebo_test)/urdf/car.xacro" />
+
+     <!-- 启动 gazebo，并加载自定义世界文件 -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find gazebo_test)/worlds/my_boxhouse.world" />
+    </include>
+
+    <!-- 在 gazebo 中生成机器人模型 -->
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_model" args="-urdf -model mycar -param robot_description -x 0 -y 0 -z 0.1" />
+    <!-- 注意：-z 0.1 将模型稍微抬离地面，防止坠落碰撞 -->
+
+    <!-- 关节以及机器人状态发布节点 -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- 启动键盘控制节点（可选，用于测试小车运动） -->
+    <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
+        <param name="speed" value="0.3"/>
+        <param name="turn" value="0.5"/>
+    </node>
+    
+    
+
+</launch>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot name="my_car_camera" xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- 包含头文件（惯性矩阵） -->
+  <xacro:include filename="$(find gazebo_test)/urdf/head.xacro" />
+  <!-- 包含底盘（会定义 base_link_length 等属性） -->
+  <xacro:include filename="$(find gazebo_test)/urdf/base.xacro" />
+  <!-- 包含摄像头模型。注意：此时base.xacro已定义base_link_length，camera.xacro能正确引用 -->
+  <xacro:include filename="$(find gazebo_test)/urdf/camera.xacro" />
+  <!-- 包含摄像头传感器插件 -->
+  <xacro:include filename="$(find gazebo_test)/urdf/camera_senser.xacro" />
+  <!-- 包含运动控制插件 -->
+  <xacro:include filename="$(find gazebo_test)/urdf/move.xacro" />
+</robot>
