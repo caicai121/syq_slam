@@ -1,4 +1,4 @@
-# tjark_agv SLAM
+# syq_SLAM
 
 基于 tjark_agv 机器人模型在 Gazebo 仿真环境中实现激光 SLAM（Gmapping）与视觉 SLAM（ORB-SLAM2）的学习工程。
 
