@@ -14,6 +14,7 @@
 
 支持的 SLAM 方案：
 - **Gmapping（激光 SLAM）**：2D 激光雷达建图
+- **Cartographer（激光 SLAM）**：2D 激光雷达建图，支持 submap、闭环检测与全局优化
 - **ORB-SLAM2（视觉 SLAM）**：RGB-D 稀疏特征点建图
 
 ## 项目亮点
@@ -72,8 +73,10 @@ catkin_ws/
     ├── tjark_agv_slam/         # SLAM 扩展包
     │   ├── launch/             # 启动文件
     │   │   ├── gmapping.launch
+    │   │   ├── cartographer.launch
     │   │   └── orb_slam2.launch
     │   ├── config/             # 配置文件
+    │   │   ├── tjark_agv_2d.lua
     │   │   └── orb_slam2_tjark.yaml
     │   ├── scripts/            # 调试与辅助脚本
     │   ├── rviz/               # RViz 预配置
@@ -175,6 +178,40 @@ roslaunch tjark_agv_slam gmapping.launch
 rosrun map_server map_saver -f ~/my_map
 # 生成 my_map.pgm 和 my_map.yaml
 ```
+
+### Cartographer 2D 激光 SLAM
+
+在原有 gmapping 仿真基础上，新增 Cartographer 2D 激光 SLAM 配置。Cartographer 源码和编译结果单独放在 `~/cartographer_ws` 中，不放入本仓库，避免影响原有 `catkin_ws` 工程。
+
+启动前依次加载环境：
+
+```bash
+source /opt/ros/noetic/setup.bash
+source ~/cartographer_ws/install_isolated/setup.bash
+source ~/catkin_ws/devel/setup.bash
+```
+
+启动 Cartographer：
+
+```bash
+roslaunch tjark_agv_slam cartographer.launch
+```
+
+启动后包含：
+- Gazebo + boxhouse 世界环境（与 gmapping 相同）
+- 机器人模型
+- Cartographer 2D SLAM 节点
+- 占据栅格地图发布节点
+- 键盘遥控
+- RViz（显示 Map、Submaps、LaserScan、RobotModel、TF）
+
+保存地图：
+
+```bash
+rosrun map_server map_saver -f ~/cartographer_map
+```
+
+注意：gmapping 和 Cartographer 不要同时启动，两者都会发布 `/map` 和 `map -> odom` TF，同时运行会冲突。后续可在相同 Gazebo 环境和相同运动路线下对比两种 SLAM 方法的建图效果。
 
 ### ORB-SLAM2 视觉 SLAM
 
