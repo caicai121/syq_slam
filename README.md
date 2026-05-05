@@ -242,6 +242,17 @@ rosrun tjark_agv_slam debug_gmapping.py
 rosrun tjark_agv_slam scan_to_pointcloud.py
 ```
 
+### 自动路线测试
+
+用于 gmapping 和 Cartographer 同路线建图对比。脚本控制机器人走较大范围巡检路线：从起点出发 → 左转进入左上区域 → 绕过左侧障碍物 → 沿上方墙体向右 → 到达右上角 → 返回中间区域。
+
+```bash
+# 先启动 SLAM（gmapping 或 Cartographer），然后在另一个终端运行：
+rosrun tjark_agv_slam auto_drive_square.py
+```
+
+参数：线速度 0.15 m/s，角速度 0.35 rad/s。可在脚本中调整各段动作的持续时间。首次测试建议在 Gazebo 中观察是否碰撞，根据实际情况微调。
+
 ## 核心参数说明
 
 ### 激光雷达（sensor.xacro）
