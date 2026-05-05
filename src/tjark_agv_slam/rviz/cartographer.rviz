@@ -82,15 +82,10 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Class: cartographer_ros/Submaps
+    - Class: Submaps
       Enabled: true
       Name: Submaps
       Topic: /submap_list
-      Value: true
-    - Class: cartographer_ros/Trajectory
-      Enabled: true
-      Name: Trajectory
-      Topic: /trajectory_node_list
       Value: true
     - Class: rviz/TF
       Enabled: true

@@ -54,7 +54,13 @@
         pkg="robot_state_publisher"
         type="robot_state_publisher" />
 
-  <!-- 7. Cartographer node -->
+  <!-- 7a. Odom timestamp filter: drop repeated timestamps from Gazebo -->
+  <node name="odom_time_filter"
+        pkg="tjark_agv_slam"
+        type="odom_time_filter.py"
+        output="screen" />
+
+  <!-- 7b. Cartographer node -->
   <node name="cartographer_node"
         pkg="cartographer_ros"
         type="cartographer_node"
@@ -62,7 +68,7 @@
         output="screen">
 
     <remap from="scan" to="/scan" />
-    <remap from="odom" to="/odom" />
+    <remap from="odom" to="/odom_filtered" />
 
   </node>
 
