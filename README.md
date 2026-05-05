@@ -183,12 +183,11 @@ rosrun map_server map_saver -f ~/my_map
 
 在原有 gmapping 仿真基础上，新增 Cartographer 2D 激光 SLAM 配置。Cartographer 源码和编译结果单独放在 `~/cartographer_ws` 中，不放入本仓库，避免影响原有 `catkin_ws` 工程。
 
-启动前依次加载环境：
+启动前依次加载环境（**顺序不能反，catkin_ws 必须在 cartographer_ws 之前**）：
 
 ```bash
-source /opt/ros/noetic/setup.bash
-source ~/cartographer_ws/install_isolated/setup.bash
 source ~/catkin_ws/devel/setup.bash
+source ~/cartographer_ws/install_isolated/setup.bash
 ```
 
 启动 Cartographer：
