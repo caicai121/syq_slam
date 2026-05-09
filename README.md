@@ -198,8 +198,9 @@ roslaunch tjark_agv_slam cartographer.launch
 
 启动后包含：
 - Gazebo + boxhouse 世界环境（与 gmapping 相同）
-- 机器人模型
-- Cartographer 2D SLAM 节点
+- 机器人模型（spawn 在 (-2, 0, 0.4)）
+- odom 时间戳过滤节点（/odom -> /odom_filtered）
+- Cartographer 2D SLAM 节点（使用 /scan 和 /odom_filtered）
 - 占据栅格地图发布节点
 - 键盘遥控
 - RViz（显示 Map、Submaps、LaserScan、RobotModel、TF）
@@ -250,7 +251,7 @@ rosrun tjark_agv_slam scan_to_pointcloud.py
 rosrun tjark_agv_slam auto_drive_square.py
 ```
 
-参数：线速度 0.15 m/s，角速度 0.35 rad/s。可在脚本中调整各段动作的持续时间。首次测试建议在 Gazebo 中观察是否碰撞，根据实际情况微调。
+参数：线速度 0.60 m/s，角速度 1.20 rad/s。可在脚本中调整各段动作的持续时间。首次测试建议在 Gazebo 中观察是否碰撞，根据实际情况微调。
 
 ## 核心参数说明
 
@@ -283,4 +284,16 @@ rosrun tjark_agv_slam auto_drive_square.py
 |------|----------|
 | `tjark_agv/urdf/tjark_agv.urdf` | `laser_to_body` rpy 修正，使 laser_link Z 轴朝上 |
 | `tjark_agv/urdf/tjark_agv.sensor.xacro` | 激光雷达 `frameName` 改为 `laser_link`；相机 FOV/range 扩展 |
-| `tjark_agv/urdf/tjark_agv.controller.xacro` | 底盘参数调整（轮径、轮距等），以匹配 URDF 实际尺寸 |
+| `tjark_agv/urdf/tjark_agv.controller.xacro` | 底盘参数调整（轮径、轮距等），以匹配 URDF 实际尺寸；添加 `<odometrySource>encoder</odometrySource>` 使 odom 原点从机器人启动位置开始计数 |
+
+### 里程计配置说明
+
+diff_drive 插件中的 `odometrySource` 参数控制 odom 坐标系的原点：
+- `world`（默认）：odom 原点在 Gazebo 世界原点 (0,0)
+- `encoder`：odom 原点在机器人启动位置
+
+当前使用 `encoder` 模式，确保机器人启动时 odom -> base_link 接近 (0,0,0)。
+
+### odom 时间戳过滤
+
+`odom_time_filter.py` 节点用于过滤 Gazebo diff_drive 插件发布的重复时间戳 odom 消息。Cartographer 对时间戳要求严格，重复时间戳会触发断言失败。该节点订阅 `/odom`，仅转发时间戳严格递增的消息到 `/odom_filtered`。
