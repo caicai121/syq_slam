@@ -27,7 +27,7 @@
 
   <!-- 4. Spawn robot (delay 5s for Gazebo ready) -->
   <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
-        args="-urdf -model tjark_agv -param robot_description -x -2 -y 0 -z 0.1"
+        args="-urdf -model tjark_agv -param robot_description -x -2 -y 0 -z 0.4"
         output="screen"
         launch-prefix="bash -c 'sleep 5; $0 $@' " />
 
