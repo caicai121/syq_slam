@@ -4,6 +4,7 @@
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
   name="tjark_agv">
+  <!-- Standard base_link: X=forward(visual front), Y=left, Z=up -->
   <link
     name="base_link">
     <!-- <inertial>
@@ -22,8 +23,8 @@
     </inertial> -->
     <visual>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0.01753 -0.496305 0.12182"
+        rpy="0 0 3.14159265358979" />
       <geometry>
         <mesh
           filename="package://tjark_agv/meshes/base_link.STL" />
@@ -36,8 +37,8 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+        xyz="0.01753 -0.496305 0.12182"
+        rpy="0 0 3.14159265358979" />
       <geometry>
         <mesh
           filename="package://tjark_agv/meshes/base_link.STL" />
@@ -88,8 +89,8 @@
     name="body_to_base"
     type="fixed">
     <origin
-      xyz="0.0910304262953284 -0.439267303074538 0.0528804871592127"
-      rpy="1.5707963267949 0 1.5707963267949" />
+      xyz="-0.0735004262953284 -0.057037696925462 0.1747004871592127"
+      rpy="1.5707963267949 0 -1.5707963267949" />
     <parent
       link="base_link" />
     <child
@@ -142,7 +143,7 @@
     type="fixed">
     <origin
       xyz="-0.057039 -0.041697 -0.23945"
-      rpy="-1.5708 -1.5708 0" />
+      rpy="-1.5708 1.5708 0" />
     <parent
       link="base_body" />
     <child
@@ -247,8 +248,8 @@
     name="left_to_base"
     type="continuous">
     <origin
-      xyz="0.01753 -0.68851 -0.12182"
-      rpy="-1.5708 0 0" />
+      xyz="0 0.192205 0"
+      rpy="-1.5708 0 3.14159265358979" />
     <parent
       link="base_link" />
     <child
@@ -300,8 +301,8 @@
     name="right_to_base"
     type="continuous">
     <origin
-      xyz="0.01753 -0.3041 -0.12182"
-      rpy="-1.5708 0 0" />
+      xyz="0 -0.192205 0"
+      rpy="-1.5708 0 3.14159265358979" />
     <parent
       link="base_link" />
     <child
@@ -353,8 +354,8 @@
     name="RF_to_base"
     type="fixed">
     <origin
-      xyz="-0.12047 -0.40231 -0.11632"
-      rpy="-3.1416 0 -1.5708" />
+      xyz="0.138 -0.093995 0.0055"
+      rpy="-3.1416 0 1.5708" />
     <parent
       link="base_link" />
     <child
@@ -406,8 +407,8 @@
     name="RB_to_base"
     type="fixed">
     <origin
-      xyz="0.15553 -0.40231 -0.11632"
-      rpy="3.1416 0 -1.5708" />
+      xyz="-0.138 -0.093995 0.0055"
+      rpy="3.1416 0 1.5708" />
     <parent
       link="base_link" />
     <child
@@ -459,8 +460,8 @@
     name="LF_to_base"
     type="fixed">
     <origin
-      xyz="-0.12047 -0.59031 -0.11632"
-      rpy="-3.1416 0 -1.5708" />
+      xyz="0.138 0.094005 0.0055"
+      rpy="-3.1416 0 1.5708" />
     <parent
       link="base_link" />
     <child
@@ -512,8 +513,8 @@
     name="LB_to_base"
     type="fixed">
     <origin
-      xyz="0.15553 -0.59031 -0.11632"
-      rpy="-1.5708 0 1.5708" />
+      xyz="-0.138 0.094005 0.0055"
+      rpy="-1.5708 0 -1.5708" />
     <parent
       link="base_link" />
     <child
