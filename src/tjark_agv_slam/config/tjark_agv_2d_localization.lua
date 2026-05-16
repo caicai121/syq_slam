@@ -23,12 +23,12 @@ options = {
   num_point_clouds = 0,
 
   lookup_transform_timeout_sec = 0.2,
-  submap_publish_period_sec = 0.5,
+  submap_publish_period_sec = 0.3,
   pose_publish_period_sec = 5e-3,
   trajectory_publish_period_sec = 30e-3,
 
   rangefinder_sampling_ratio = 1.0,
-  odometry_sampling_ratio = 0.5,
+  odometry_sampling_ratio = 1.0,
   fixed_frame_pose_sampling_ratio = 1.0,
   imu_sampling_ratio = 1.0,
   landmarks_sampling_ratio = 1.0,

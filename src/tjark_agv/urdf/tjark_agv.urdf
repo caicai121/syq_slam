@@ -4,6 +4,12 @@
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
   name="tjark_agv">
+  <link name="base_footprint"/>
+  <joint name="base_footprint_to_base" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
   <!-- Standard base_link: X=forward(visual front), Y=left, Z=up -->
   <link
     name="base_link">
@@ -211,9 +217,9 @@
         xyz="3.32003410137387E-05 1.47427065758099E-06 0.0206360203406354"
         rpy="0 0 0" />
       <mass
-        value="0.223430950895449" />
+        value="0.223430950718916" />
       <inertia
-        ixx="0.000335456894762655"
+        ixx="0.000335456866973021"
         ixy="3.8449253597207E-09"
         ixz="-2.4684661348122E-09"
         iyy="0.00033531738326045"
@@ -264,9 +270,9 @@
         xyz="-3.31951458207025E-05 1.58725489640688E-06 -0.0206360203414102"
         rpy="0 0 0" />
       <mass
-        value="0.223430950718916" />
+        value="0.223430950895449" />
       <inertia
-        ixx="0.000335456866973021"
+        ixx="0.000335456894762655"
         ixy="-4.31963414625839E-09"
         ixz="-2.46806031119726E-09"
         iyy="0.000335317411029562"
@@ -522,4 +528,16 @@
     <axis
       xyz="0 0 0" />
   </joint>
+  <gazebo reference="left_wheel">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>100.0</kd>
+  </gazebo>
+  <gazebo reference="right_wheel">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>100.0</kd>
+  </gazebo>
 </robot>

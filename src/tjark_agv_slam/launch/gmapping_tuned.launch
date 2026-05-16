@@ -1,0 +1,92 @@
+<launch>
+  <!-- ============================================================ -->
+  <!-- Gmapping TUNED - 改善地图旋转/漂移/重影                       -->
+  <!--                                                              -->
+  <!-- 与 gmapping.launch 相同环境，仅调整 slam_gmapping 参数        -->
+  <!-- 用于对比测试是否能改善墙体重影和地图旋转问题                   -->
+  <!--                                                              -->
+  <!-- Usage:                                                       -->
+  <!--   roslaunch tjark_agv_slam gmapping_tuned.launch             -->
+  <!-- ============================================================ -->
+
+  <!-- 1. Load robot description -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro $(find tjark_agv_slam)/urdf/tjark_agv_slam.xacro" />
+
+  <!-- 2. Start Gazebo with Boxhouse world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find tjark_agv_slam)/worlds/boxhouse_builtin.world" />
+    <arg name="paused" value="false" />
+    <arg name="use_sim_time" value="true" />
+    <arg name="gui" value="true" />
+    <arg name="headless" value="false" />
+    <arg name="debug" value="false" />
+  </include>
+
+  <!-- 3. Static TF -->
+  <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher"
+        args="0 0 0 0 0 0 base_link base_footprint 40" />
+
+  <!-- 4. Spawn robot (delay 5s for Gazebo ready) -->
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -model tjark_agv -param robot_description -x -2 -y 0 -z 0.1"
+        output="screen"
+        launch-prefix="bash -c 'sleep 5; $0 $@' " />
+
+  <!-- 5. Robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher"
+        type="robot_state_publisher" />
+
+  <!-- 6. Gmapping (TUNED) -->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <!-- 激光雷达范围 -->
+    <param name="maxUrange" value="8.0"/>   <!-- 增加可用范围 6.0 -> 8.0 -->
+    <param name="maxRange" value="12.0"/>
+
+    <!-- 地图分辨率与边界 -->
+    <param name="delta" value="0.05"/>      <!-- 5cm 分辨率 -->
+    <param name="xmin" value="-10"/>
+    <param name="xmax" value="10"/>
+    <param name="ymin" value="-10"/>
+    <param name="ymax" value="10"/>
+
+    <!-- ========== 调参核心：更频繁的更新 ========== -->
+    <param name="linearUpdate" value="0.20"/>   <!-- 每移动 0.2m 更新，减少长距离误差累积 -->
+    <param name="angularUpdate" value="0.10"/>  <!-- 每转动 0.1rad 更新，改善转弯漂移 -->
+    <param name="temporalUpdate" value="0.50"/> <!-- 即使无运动也每 0.5s 更新，提高数据利用率 -->
+    <param name="map_update_interval" value="1.0"/>
+
+    <!-- ========== 调参核心：粒子与匹配 ========== -->
+    <param name="particles" value="80"/>        <!-- 降低粒子数 120 -> 80，减少计算负担 -->
+    <param name="iterations" value="8"/>        <!-- 增加扫描匹配迭代次数，提高精度 -->
+    <param name="minimumScore" value="50"/>     <!-- 降低阈值 60 -> 50，保留更多有效匹配 -->
+
+    <!-- ========== 调参核心：扫描匹配参数 ========== -->
+    <param name="sigma" value="0.05"/>          <!-- 匹配高斯核标准差 -->
+    <param name="kernelSize" value="1"/>        <!-- 匹配核大小 -->
+    <param name="lstep" value="0.05"/>          <!-- 线性搜索步长 -->
+    <param name="astep" value="0.05"/>          <!-- 角度搜索步长 -->
+    <param name="lsigma" value="0.075"/>        <!-- 激光似然标准差 -->
+    <param name="ogain" value="3.0"/>           <!-- 增益，影响似然场锐度 -->
+    <param name="lskip" value="0"/>             <!-- 不跳过任何激光束 -->
+
+    <!-- 运动模型噪声：信任 odom -->
+    <param name="srr" value="0.01"/>
+    <param name="srt" value="0.02"/>
+    <param name="str" value="0.01"/>
+    <param name="stt" value="0.02"/>
+
+    <!-- TF 帧 -->
+    <param name="odom_frame" value="odom"/>
+    <param name="map_frame" value="map"/>
+  </node>
+
+  <!-- 7. Teleop keyboard (opens in a new terminal) -->
+  <node name="teleop" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"
+        launch-prefix="gnome-terminal --" />
+
+  <!-- 8. RViz with pre-configured map display -->
+  <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find tjark_agv_slam)/rviz/gmapping.rviz" />
+
+</launch>

@@ -13,7 +13,7 @@
 
   <!-- 2. Start Gazebo with Boxhouse world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find tjark_agv_slam)/worlds/boxhouse_builtin.world" />
+    <arg name="world_name" value="$(find tjark_agv_slam)/worlds/boxhouse_square_maze.world" />
     <arg name="paused" value="false" />
     <arg name="use_sim_time" value="true" />
     <arg name="gui" value="true" />
@@ -21,11 +21,7 @@
     <arg name="debug" value="false" />
   </include>
 
-  <!-- 3. Static TF -->
-  <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher"
-        args="0 0 0 0 0 0 base_link base_footprint 40" />
-
-  <!-- 4. Spawn robot (delay 5s for Gazebo ready) -->
+  <!-- 3. Spawn robot (delay 5s for Gazebo ready) -->
   <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
         args="-urdf -model tjark_agv -param robot_description -x -2 -y 0 -z 0.4"
         output="screen"

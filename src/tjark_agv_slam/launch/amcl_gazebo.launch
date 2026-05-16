@@ -1,0 +1,43 @@
+<launch>
+  <!-- ============================================================ -->
+  <!-- AMCL Gazebo - 只启动 Gazebo + 机器人，用于 AMCL 定位实验      -->
+  <!--                                                              -->
+  <!-- 不启动 gmapping、Cartographer、AMCL、move_base                -->
+  <!-- 只提供和建图时一致的仿真环境                                   -->
+  <!--                                                              -->
+  <!-- Usage:                                                       -->
+  <!--   roslaunch tjark_agv_slam amcl_gazebo.launch                -->
+  <!-- ============================================================ -->
+
+  <!-- 1. Load robot description -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro $(find tjark_agv_slam)/urdf/tjark_agv_slam.xacro" />
+
+  <!-- 2. Start Gazebo with Boxhouse world (same as gmapping/cartographer) -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find tjark_agv_slam)/worlds/boxhouse_builtin.world" />
+    <arg name="paused" value="false" />
+    <arg name="use_sim_time" value="true" />
+    <arg name="gui" value="true" />
+    <arg name="headless" value="false" />
+    <arg name="debug" value="false" />
+  </include>
+
+  <!-- 3. Static TF -->
+  <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher"
+        args="0 0 0 0 0 0 base_link base_footprint 40" />
+
+  <!-- 4. Spawn robot (delay 5s for Gazebo ready) -->
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -model tjark_agv -param robot_description -x -2 -y 0 -z 0.4"
+        output="screen"
+        launch-prefix="bash -c 'sleep 5; $0 $@' " />
+
+  <!-- 5. Robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher"
+        type="robot_state_publisher" />
+
+  <!-- Note: No SLAM, no AMCL, no move_base -->
+  <!-- Use teleop in separate terminal: rosrun teleop_twist_keyboard teleop_twist_keyboard.py -->
+
+</launch>

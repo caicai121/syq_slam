@@ -21,8 +21,8 @@
             <legacyMode>true</legacyMode>
             <leftJoint>left_to_base</leftJoint>
             <rightJoint>right_to_base</rightJoint>
-            <wheelSeparation>0.38441</wheelSeparation>
-            <wheelDiameter>0.149</wheelDiameter>
+            <wheelSeparation>0.316</wheelSeparation>
+            <wheelDiameter>0.125</wheelDiameter>
             <broadcastTF>1</broadcastTF>
             <wheelTorque>30</wheelTorque>
             <wheelAcceleration>1.8</wheelAcceleration>

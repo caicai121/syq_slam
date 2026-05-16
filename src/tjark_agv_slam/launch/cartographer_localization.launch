@@ -1,31 +1,31 @@
 <launch>
 
   <!-- ============================================================ -->
-  <!-- Cartographer 2D Laser SLAM with tjark_agv in Boxhouse Gazebo -->
-  <!--                                                              -->
-  <!-- Usage:                                                       -->
-  <!--   source ~/cartographer_ws/install_isolated/setup.bash       -->
-  <!--   source ~/catkin_ws/devel/setup.bash                        -->
-  <!--   roslaunch tjark_agv_slam cartographer.launch               -->
+  <!-- Cartographer Localization: 在已有地图上定位                    -->
   <!--                                                              -->
   <!-- Prerequisites:                                               -->
-  <!--   Cartographer must be installed or compiled separately.      -->
-  <!--   Do NOT run simultaneously with gmapping.launch.            -->
+  <!--   source ~/cartographer_ws/install_isolated/setup.bash       -->
+  <!--   source ~/catkin_ws/devel/setup.bash                        -->
+  <!--   roslaunch tjark_agv_slam cartographer_localization.launch  -->
+  <!--                                                              -->
+  <!-- 启动后需要手动冻结轨迹：                                      -->
+  <!--   rosservice call /start_trajectory                           -->
   <!-- ============================================================ -->
 
   <arg name="use_sim_time" default="true"/>
-  <arg name="configuration_basename" default="tjark_agv_2d.lua"/>
+  <arg name="configuration_basename" default="tjark_agv_2d_localization.lua"/>
   <arg name="rviz" default="true"/>
   <arg name="teleop" default="true"/>
+  <arg name="pbstream_file" default="$(find tjark_agv_slam)/maps/map.pbstream"/>
 
   <!-- 1. Use simulation time -->
   <param name="/use_sim_time" value="$(arg use_sim_time)" />
 
   <!-- 2. Load robot description -->
   <param name="robot_description"
-         command="$(find xacro)/xacro $(find tjark_agv_slam)/urdf/tjark_agv_slam.xacro" />
+         command="$(find xacro)/xacro $(find tjark_agv)/urdf/tjark_agv.xacro" />
 
-  <!-- 3. Start Gazebo with the same world used by gmapping -->
+  <!-- 3. Start Gazebo with the same world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find tjark_agv_slam)/worlds/boxhouse_square_maze.world" />
     <arg name="paused" value="false" />
@@ -48,17 +48,19 @@
         pkg="robot_state_publisher"
         type="robot_state_publisher" />
 
-  <!-- 7a. Odom timestamp filter: drop repeated timestamps from Gazebo -->
+  <!-- 7a. Odom timestamp filter -->
   <node name="odom_time_filter"
         pkg="tjark_agv_slam"
         type="odom_time_filter.py"
         output="screen" />
 
-  <!-- 7b. Cartographer node -->
+  <!-- 7b. Cartographer node (localization mode) -->
   <node name="cartographer_node"
         pkg="cartographer_ros"
         type="cartographer_node"
-        args="-configuration_directory $(find tjark_agv_slam)/config -configuration_basename $(arg configuration_basename)"
+        args="-configuration_directory $(find tjark_agv_slam)/config
+              -configuration_basename $(arg configuration_basename)
+              -load_state_filename $(arg pbstream_file)"
         output="screen">
 
     <remap from="scan" to="/scan" />
@@ -66,7 +68,7 @@
 
   </node>
 
-  <!-- 8. Occupancy grid node: publish /map from Cartographer submaps -->
+  <!-- 8. Occupancy grid node -->
   <node name="cartographer_occupancy_grid_node"
         pkg="cartographer_ros"
         type="cartographer_occupancy_grid_node"
