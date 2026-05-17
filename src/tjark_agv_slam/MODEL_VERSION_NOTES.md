@@ -56,6 +56,23 @@
 
 模型 wrapper:`tjark_agv_slam/urdf/tjark_agv_slam_v3.xacro`
 
+### cartographer_v3.launch 验证结果
+
+cartographer_v3.launch 已完成基础启动验证，结果如下：
+
+- Gazebo 正常启动；
+- RViz 正常启动；
+- /scan 正常发布，频率约 10Hz；
+- /scan frame_id 为 laser，与 V3 模型 TF 中的 laser frame 匹配；
+- /odom 正常发布，频率约 50Hz，child_frame_id 为 base_link；
+- /map 正常发布；
+- TF 链路正常：map → odom → base_link → laser；
+- Cartographer 正常接收 /scan 和 /odom，并开始建图；
+- TF_REPEATED_DATA 为已知 warning，当前暂不处理；
+- 验证完成后主动清理 ROS/Gazebo 进程，后续 tf_echo 被终止不影响验证结论。
+
+**结论**：V3 主线已完成 Cartographer 基础接入，后续 gmapping / Cartographer 对比实验可以基于 `tjark_agv_v3` 继续推进。
+
 ---
 
 ## test: `tjark_agv_test`
