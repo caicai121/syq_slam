@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<robot name="tjark_agv_v3" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find tjark_agv_v3)/urdf/tjark_agv.xacro" />
+</robot>

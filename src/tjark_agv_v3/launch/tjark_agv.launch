@@ -1,0 +1,23 @@
+<launch>
+    
+  <!-- load world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- <arg name="world_name" value="$(find gazebo_ros)/world/empty_world.world" /> -->
+    <arg name="world_name" value="/usr/share/gazebo-11/worlds/cafe.world" />
+    <arg name="paused" value="false" />
+    <arg name="use_sim_time" value="true" />
+    <arg name="headless" value="false" />
+    <arg name="debug" value="false" />
+  </include>
+
+  <!-- load robot -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find tjark_agv)/urdf/tjark_agv.xacro" />
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model tjark_agv -x 1.40 -y 3.125 -z 0.4 -R 0 -P 0 -Y 0 -param robot_description" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
+
+
+  <!-- load controller -->
+  <rosparam file="$(find tjark_agv)/urdf/tjark_agv.controller.yaml" command="load"/>
+  <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/" /> -->
+
+</launch>

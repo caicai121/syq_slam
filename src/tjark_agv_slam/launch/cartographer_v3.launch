@@ -1,0 +1,90 @@
+<launch>
+
+  <!-- ============================================================ -->
+  <!-- Cartographer 2D Laser SLAM with tjark_agv_v3 in Boxhouse Gazebo -->
+  <!--                                                              -->
+  <!-- Usage:                                                       -->
+  <!--   source ~/cartographer_ws/install_isolated/setup.bash       -->
+  <!--   source ~/catkin_ws/devel/setup.bash                        -->
+  <!--   roslaunch tjark_agv_slam cartographer_v3.launch            -->
+  <!--                                                              -->
+  <!-- Prerequisites:                                               -->
+  <!--   Cartographer must be installed or compiled separately.      -->
+  <!--   Do NOT run simultaneously with gmapping.launch.            -->
+  <!-- ============================================================ -->
+
+  <arg name="use_sim_time" default="true"/>
+  <arg name="configuration_basename" default="tjark_agv_2d.lua"/>
+  <arg name="rviz" default="true"/>
+  <arg name="teleop" default="true"/>
+
+  <!-- 1. Use simulation time -->
+  <param name="/use_sim_time" value="$(arg use_sim_time)" />
+
+  <!-- 2. Load robot description -->
+  <param name="robot_description"
+         command="$(find xacro)/xacro $(find tjark_agv_slam)/urdf/tjark_agv_slam_v3.xacro" />
+
+  <!-- 3. Start Gazebo with the same world used by gmapping -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find tjark_agv_slam)/worlds/boxhouse_square_maze.world" />
+    <arg name="paused" value="false" />
+    <arg name="use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="gui" value="true" />
+    <arg name="headless" value="false" />
+    <arg name="debug" value="false" />
+  </include>
+
+  <!-- 4. Spawn robot (delay 5s for Gazebo ready) -->
+  <node name="spawn_model"
+        pkg="gazebo_ros"
+        type="spawn_model"
+        args="-urdf -model tjark_agv_v3 -param robot_description -x -1 -y 0 -z 0.4"
+        output="screen"
+        launch-prefix="bash -c 'sleep 5; $0 $@' " />
+
+  <!-- 6. Robot state publisher -->
+  <node name="robot_state_publisher"
+        pkg="robot_state_publisher"
+        type="robot_state_publisher" />
+
+  <!-- 7a. Odom timestamp filter: drop repeated timestamps from Gazebo -->
+  <node name="odom_time_filter"
+        pkg="tjark_agv_slam"
+        type="odom_time_filter.py"
+        output="screen" />
+
+  <!-- 7b. Cartographer node -->
+  <node name="cartographer_node"
+        pkg="cartographer_ros"
+        type="cartographer_node"
+        args="-configuration_directory $(find tjark_agv_slam)/config -configuration_basename $(arg configuration_basename)"
+        output="screen">
+
+    <remap from="scan" to="/scan" />
+    <remap from="odom" to="/odom_filtered" />
+
+  </node>
+
+  <!-- 8. Occupancy grid node: publish /map from Cartographer submaps -->
+  <node name="cartographer_occupancy_grid_node"
+        pkg="cartographer_ros"
+        type="cartographer_occupancy_grid_node"
+        args="-resolution 0.05 -publish_period_sec 1.0"
+        output="screen" />
+
+  <!-- 9. Teleop keyboard -->
+  <node if="$(arg teleop)"
+        name="teleop"
+        pkg="teleop_twist_keyboard"
+        type="teleop_twist_keyboard.py"
+        launch-prefix="gnome-terminal --" />
+
+  <!-- 10. RViz -->
+  <node if="$(arg rviz)"
+        name="rviz"
+        pkg="rviz"
+        type="rviz"
+        args="-d $(find tjark_agv_slam)/rviz/cartographer.rviz" />
+
+</launch>
